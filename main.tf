@@ -5,6 +5,17 @@ terraform {
       version = "~> 2.0"
     }
   }
+  
+  backend "s3" {
+    bucket                      = "terraform-state"
+    key                         = "terraform.tfstate"
+    region                      = "auto"
+    endpoint                    = "https://<account_id>.r2.cloudflarestorage.com"
+    skip_credentials_validation = true
+    skip_region_validation      = true
+    skip_metadata_api_check     = true
+    use_path_style              = true
+  }
 }
 
 provider "digitalocean" {

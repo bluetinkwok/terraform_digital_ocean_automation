@@ -1,0 +1,11 @@
+# Cloudflare R2 Backend Configuration Example
+# Rename this file to terraform.tfbackend and update with your actual credentials
+
+access_key = "YOUR_R2_ACCESS_KEY"
+secret_key = "YOUR_R2_SECRET_KEY"
+endpoint   = "https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com"
+
+# Additional optional settings:
+# bucket    = "terraform-state"     # Default is "terraform-state" as configured in main.tf
+# key       = "terraform.tfstate"   # Default is "terraform.tfstate" as configured in main.tf
+# region    = "auto"                # Default is "auto" 

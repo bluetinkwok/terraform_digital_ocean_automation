@@ -9,6 +9,7 @@ This Terraform configuration sets up n8n and Flowise applications on a single Di
 - **Centralized Caddy**: A single Caddy instance handles SSL/TLS certificates and reverse proxy for both applications
 - **DNS Management**: Automatically configures DNS records for both subdomains
 - **Optional Backups**: Automated daily backups of application data and volumes
+- **Remote State Storage**: Terraform state stored in Cloudflare R2 for better collaboration and state management
 
 ## Prerequisites
 
@@ -102,17 +103,34 @@ cp terraform.tfvars.example terraform.tfvars
 export DIGITALOCEAN_TOKEN=your_token_here
 ```
 
-5. Initialize Terraform:
+5. Configure Cloudflare R2 Backend:
+   
+   Create a `terraform.tfbackend` file with your Cloudflare R2 credentials:
+   
+   ```
+   access_key = "YOUR_R2_ACCESS_KEY"
+   secret_key = "YOUR_R2_SECRET_KEY"
+   endpoint   = "https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com"
+   ```
+   
+   Replace the placeholders with your actual Cloudflare R2 credentials:
+   - YOUR_R2_ACCESS_KEY: Your Cloudflare R2 access key
+   - YOUR_R2_SECRET_KEY: Your Cloudflare R2 secret key
+   - YOUR_ACCOUNT_ID: Your Cloudflare account ID
+   
+   Note: Make sure you've created a bucket named `terraform-state` in your Cloudflare R2 account.
+
+6. Initialize Terraform with the R2 backend:
 ```bash
-terraform init
+terraform init -backend-config=terraform.tfbackend
 ```
 
-6. Review the planned changes:
+7. Review the planned changes:
 ```bash
 terraform plan
 ```
 
-7. Apply the configuration:
+8. Apply the configuration:
 ```bash
 terraform apply
 ```
