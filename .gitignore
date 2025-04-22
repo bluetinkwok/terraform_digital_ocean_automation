@@ -3,3 +3,5 @@ terraform.tfbackend
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
+.ssh/*
+!.ssh/.gitkeep

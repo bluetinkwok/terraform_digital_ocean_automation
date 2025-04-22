@@ -66,3 +66,10 @@ variable "do_token" {
   sensitive   = true
 }
 
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID for R2 storage"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+

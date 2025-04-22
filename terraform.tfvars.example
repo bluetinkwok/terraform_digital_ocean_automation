@@ -24,4 +24,8 @@ flowise_password = "your-secure-password"
 # Backup options
 enable_backups = true
 backup_time = "0 2 * * *"  # 2 AM daily
-backup_retention_days = 7 
+backup_retention_days = 7
+
+# NOTE: Cloudflare R2 backend configuration (account ID, access keys, etc.)
+# should be set in the terraform.tfbackend file, not here.
+# See README.md for instructions. 

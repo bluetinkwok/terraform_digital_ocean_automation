@@ -15,7 +15,7 @@ This Terraform configuration sets up n8n and Flowise applications on a single Di
 
 1. DigitalOcean account and API token
 2. Terraform installed on your local machine
-3. SSH key pair (we'll create a project-specific one: `~/.ssh/do_n8n_flowise`)
+3. SSH key pair (we'll create a project-specific one in the `.ssh` folder)
 4. Domain name with DNS managed by DigitalOcean
 
 ## Generating SSH Keys
@@ -25,36 +25,42 @@ You should create a project-specific SSH key pair for this deployment:
 ### For Linux/macOS:
 
 ```bash
+# Make sure the project .ssh directory exists
+mkdir -p .ssh
+
 # Generate a new SSH key pair with a unique name
-ssh-keygen -t rsa -b 4096 -C "your-email@example.com" -f ~/.ssh/do_n8n_flowise
+ssh-keygen -t rsa -b 4096 -C "your-email@example.com" -f .ssh/do_n8n_flowise
 
 # Enter a secure passphrase (or leave empty for no passphrase)
 
 # Verify the key was created
-ls -la ~/.ssh/do_n8n_flowise.pub
+ls -la .ssh/do_n8n_flowise.pub
 ```
 
 ### For Windows (using Git Bash or similar):
 
 ```bash
+# Make sure the project .ssh directory exists
+mkdir -p .ssh
+
 # Generate a new SSH key pair with a unique name
-ssh-keygen -t rsa -b 4096 -C "your-email@example.com" -f ~/.ssh/do_n8n_flowise
+ssh-keygen -t rsa -b 4096 -C "your-email@example.com" -f .ssh/do_n8n_flowise
 
 # Enter a secure passphrase (or leave empty for no passphrase)
 
 # Verify the key was created
-ls -la ~/.ssh/do_n8n_flowise.pub
+ls -la .ssh/do_n8n_flowise.pub
 ```
 
 ### Alternative for Windows (using PuTTYgen):
 
 1. Download and install PuTTY which includes PuTTYgen
-2. Open PuTTYgen and click "Generate"
-3. Move your mouse around to generate randomness
-4. Set a passphrase (optional but recommended)
-5. Click "Save private key" and save it as `do_n8n_flowise.ppk`
-6. Save the public key in OpenSSH format as `do_n8n_flowise.pub`
-7. Copy the public key to `~/.ssh/do_n8n_flowise.pub` if using standard SSH clients
+2. Create a `.ssh` folder in your project directory
+3. Open PuTTYgen and click "Generate"
+4. Move your mouse around to generate randomness
+5. Set a passphrase (optional but recommended)
+6. Click "Save private key" and save it as `.ssh/do_n8n_flowise.ppk`
+7. Export and save the public key in OpenSSH format as `.ssh/do_n8n_flowise.pub`
 
 **Important**: After generating the key, remember to:
 1. Keep your private key secure
@@ -63,18 +69,18 @@ ls -la ~/.ssh/do_n8n_flowise.pub
 
 ## Update main.tf Configuration
 
-After generating your SSH key with the unique name, update the `main.tf` file to point to your key:
+The `main.tf` file is already configured to use the local SSH key:
 
 ```hcl
-# In main.tf, find this line and update it:
-public_key = file("~/.ssh/do_n8n_flowise.pub")
+# In main.tf:
+public_key = file("${path.module}/.ssh/do_n8n_flowise.pub")
 
-# Also update the connection block:
+# Connection block:
 connection {
   type        = "ssh"
   user        = "root"
   host        = self.ipv4_address
-  private_key = file("~/.ssh/do_n8n_flowise")
+  private_key = file("${path.module}/.ssh/do_n8n_flowise")
 }
 ```
 
@@ -108,9 +114,15 @@ export DIGITALOCEAN_TOKEN=your_token_here
    Create a `terraform.tfbackend` file with your Cloudflare R2 credentials:
    
    ```
+   # Required parameters
    access_key = "YOUR_R2_ACCESS_KEY"
    secret_key = "YOUR_R2_SECRET_KEY"
-   endpoint   = "https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com"
+   endpoints = {
+     s3 = "https://YOUR_ACCOUNT_ID.r2.cloudflarestorage.com"
+   }
+   bucket     = "terraform-state"
+   key        = "terraform.tfstate"
+   region     = "auto"
    ```
    
    Replace the placeholders with your actual Cloudflare R2 credentials:
@@ -118,12 +130,18 @@ export DIGITALOCEAN_TOKEN=your_token_here
    - YOUR_R2_SECRET_KEY: Your Cloudflare R2 secret key
    - YOUR_ACCOUNT_ID: Your Cloudflare account ID
    
-   Note: Make sure you've created a bucket named `terraform-state` in your Cloudflare R2 account.
+   Note: Make sure you've created a bucket named `terraform-state` (or whatever name you specify in the bucket parameter) in your Cloudflare R2 account before initializing.
+   
+   The backend configuration is split between:
+   - `main.tf`: Contains non-sensitive backend settings (like validation skipping and skip_requesting_account_id)
+   - `terraform.tfbackend`: Contains all sensitive credentials and variable settings
 
 6. Initialize Terraform with the R2 backend:
-```bash
-terraform init -backend-config=terraform.tfbackend
-```
+   ```bash
+   terraform init -backend-config=terraform.tfbackend
+   ```
+   
+   Note: If you didn't create a terraform.tfbackend file with all required parameters, Terraform will prompt you for the missing values (bucket, key, region, etc.) during initialization.
 
 7. Review the planned changes:
 ```bash

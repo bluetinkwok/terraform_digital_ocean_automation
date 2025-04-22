@@ -7,25 +7,23 @@ terraform {
   }
   
   backend "s3" {
-    bucket                      = "terraform-state"
-    key                         = "terraform.tfstate"
-    region                      = "auto"
-    endpoint                    = "https://<account_id>.r2.cloudflarestorage.com"
     skip_credentials_validation = true
     skip_region_validation      = true
     skip_metadata_api_check     = true
+    skip_requesting_account_id  = true
     use_path_style              = true
   }
 }
 
 provider "digitalocean" {
   # Token should be set via DIGITALOCEAN_TOKEN environment variable
+  token = var.do_token
 }
 
 # Create a new SSH key
 resource "digitalocean_ssh_key" "default" {
   name       = "terraform-n8n-flowise"
-  public_key = file("~/.ssh/do_n8n_flowise.pub")
+  public_key = file("${path.module}/.ssh/do_n8n_flowise.pub")
 }
 
 # Create VPC for our applications
@@ -49,7 +47,7 @@ resource "digitalocean_droplet" "apps" {
     type        = "ssh"
     user        = "root"
     host        = self.ipv4_address
-    private_key = file("~/.ssh/do_n8n_flowise")
+    private_key = file("${path.module}/.ssh/do_n8n_flowise")
   }
 
   # First create the necessary directories
