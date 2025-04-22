@@ -123,6 +123,7 @@ export DIGITALOCEAN_TOKEN=your_token_here
    bucket     = "terraform-state"
    key        = "terraform.tfstate"
    region     = "auto"
+   force_path_style = true
    ```
    
    Replace the placeholders with your actual Cloudflare R2 credentials:

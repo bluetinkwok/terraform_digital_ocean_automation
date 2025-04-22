@@ -4,6 +4,10 @@ terraform {
       source  = "digitalocean/digitalocean"
       version = "~> 2.0"
     }
+    cloudflare = {
+      source = "cloudflare/cloudflare"
+      version = "~> 4"
+    }
   }
   
   backend "s3" {
@@ -11,6 +15,7 @@ terraform {
     skip_region_validation      = true
     skip_metadata_api_check     = true
     skip_requesting_account_id  = true
+    skip_s3_checksum            = true
     use_path_style              = true
   }
 }

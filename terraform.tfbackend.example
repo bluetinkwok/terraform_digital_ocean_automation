@@ -10,6 +10,7 @@ endpoints = {
 bucket     = "terraform-state"
 key        = "terraform.tfstate"
 region     = "auto"
+force_path_style = true
 
 # Note: These parameters are not specified in main.tf and must be included here.
 # The non-sensitive configuration options (skip validations, etc.) are kept in main.tf. 
