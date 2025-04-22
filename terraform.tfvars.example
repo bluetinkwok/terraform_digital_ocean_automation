@@ -1,0 +1,27 @@
+# DigitalOcean token
+do_token = "your-digitalocean-token"
+
+# Region for the droplets (default: sgp1)
+region = "sgp1"
+
+# Droplet size (default: s-1vcpu-2gb)
+droplet_size = "s-1vcpu-2gb"
+
+# Domain name (must be managed by DigitalOcean)
+domain = "yourdomain.com"
+
+# Email for SSL certificates
+email = "your-email@example.com"
+
+# n8n credentials
+n8n_username = "admin"
+n8n_password = "your-secure-password"
+
+# Flowise credentials
+flowise_username = "admin"
+flowise_password = "your-secure-password"
+
+# Backup options
+enable_backups = true
+backup_time = "0 2 * * *"  # 2 AM daily
+backup_retention_days = 7 
