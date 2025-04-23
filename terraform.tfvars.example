@@ -1,6 +1,10 @@
 # DigitalOcean token
 do_token = "your-digitalocean-token"
 
+# Cloudflare token
+cloudflare_api_token = "your-cloudflare-api-token"
+cloudflare_zone_id = "your-cloudflare-zone-id"
+
 # Region for the droplets (default: sgp1)
 region = "sgp1"
 

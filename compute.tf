@@ -1,30 +1,3 @@
-terraform {
-  required_providers {
-    digitalocean = {
-      source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
-    }
-    cloudflare = {
-      source = "cloudflare/cloudflare"
-      version = "~> 4"
-    }
-  }
-  
-  backend "s3" {
-    skip_credentials_validation = true
-    skip_region_validation      = true
-    skip_metadata_api_check     = true
-    skip_requesting_account_id  = true
-    skip_s3_checksum            = true
-    use_path_style              = true
-  }
-}
-
-provider "digitalocean" {
-  # Token should be set via DIGITALOCEAN_TOKEN environment variable
-  token = var.do_token
-}
-
 # Create a new SSH key
 resource "digitalocean_ssh_key" "default" {
   name       = "terraform-n8n-flowise"
@@ -109,61 +82,5 @@ resource "digitalocean_droplet" "apps" {
       "export backup_retention_days='${var.backup_retention_days}'",
       "./init.sh"
     ]
-  }
-}
-
-# Create DNS records
-resource "digitalocean_domain" "domain" {
-  name = var.domain
-}
-
-resource "digitalocean_record" "n8n" {
-  domain = digitalocean_domain.domain.name
-  type   = "A"
-  name   = "n8n"
-  value  = digitalocean_droplet.apps.ipv4_address
-}
-
-resource "digitalocean_record" "flowise" {
-  domain = digitalocean_domain.domain.name
-  type   = "A"
-  name   = "flowise"
-  value  = digitalocean_droplet.apps.ipv4_address
-}
-
-# Create firewall rules
-resource "digitalocean_firewall" "web" {
-  name = "web-firewall"
-
-  droplet_ids = [digitalocean_droplet.apps.id]
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "22"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "80"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  inbound_rule {
-    protocol         = "tcp"
-    port_range       = "443"
-    source_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "tcp"
-    port_range           = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
-  }
-
-  outbound_rule {
-    protocol              = "udp"
-    port_range           = "1-65535"
-    destination_addresses = ["0.0.0.0/0", "::/0"]
   }
 } 

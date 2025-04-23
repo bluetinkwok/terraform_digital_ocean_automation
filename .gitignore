@@ -5,3 +5,4 @@ terraform.tfstate
 terraform.tfstate.backup
 .ssh/*
 !.ssh/.gitkeep
+.terraform.lock.hcl

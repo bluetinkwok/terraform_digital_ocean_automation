@@ -7,16 +7,30 @@ This Terraform configuration sets up n8n and Flowise applications on a single Di
 - **Single Droplet**: Both n8n and Flowise run on one DigitalOcean droplet to optimize costs
 - **Docker Compose**: Each application runs in its own Docker Compose setup
 - **Centralized Caddy**: A single Caddy instance handles SSL/TLS certificates and reverse proxy for both applications
-- **DNS Management**: Automatically configures DNS records for both subdomains
+- **DNS Management**: Automatically configures DNS records in both DigitalOcean and Cloudflare
 - **Optional Backups**: Automated daily backups of application data and volumes
 - **Remote State Storage**: Terraform state stored in Cloudflare R2 for better collaboration and state management
+
+## Project Structure
+
+The Terraform configuration is organized into multiple files for better maintainability:
+
+- **main.tf**: Entry point and overview
+- **providers.tf**: Provider configurations and backend setup
+- **compute.tf**: Compute resources (SSH keys, VPC, droplets)
+- **dns.tf**: DNS configuration for both Cloudflare and DigitalOcean
+- **security.tf**: Firewall and security configurations
+- **variables.tf**: Input variable definitions
+- **outputs.tf**: Output values
+- **terraform.tfvars.example**: Example variable values
 
 ## Prerequisites
 
 1. DigitalOcean account and API token
-2. Terraform installed on your local machine
-3. SSH key pair (we'll create a project-specific one in the `.ssh` folder)
-4. Domain name with DNS managed by DigitalOcean
+2. Cloudflare account, API token, and Zone ID
+3. Terraform installed on your local machine
+4. SSH key pair (we'll create a project-specific one in the `.ssh` folder)
+5. Domain name registered and added to Cloudflare
 
 ## Generating SSH Keys
 
@@ -98,10 +112,11 @@ cp terraform.tfvars.example terraform.tfvars
 ```
 
 3. Edit `terraform.tfvars` with your values:
-- Set your domain name (must be managed by DigitalOcean)
+- Set your domain name
 - Set your email address for SSL certificates
 - Configure usernames and passwords for n8n and Flowise
 - Configure backup settings (enable/disable, schedule, retention)
+- Add your Cloudflare API token and Zone ID
 - Adjust region and droplet size if needed
 
 4. Set your DigitalOcean API token:
