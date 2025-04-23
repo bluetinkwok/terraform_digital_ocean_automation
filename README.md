@@ -312,6 +312,32 @@ ssh root@<droplet-ip>
 - Check backup logs: `cat /opt/backups/backup.log`
 - Restart all services: `cd /opt/apps && ./init.sh`
 
+### SSL Certificate Issues
+
+If you encounter SSL errors like `ERR_SSL_PROTOCOL_ERROR` when accessing your applications:
+
+1. **Check DNS propagation**: Ensure your DNS records have properly propagated using `dig n8n.yourdomain.com` and `dig flowise.yourdomain.com`
+
+2. **Verify your DNS provider**: Make sure both your DNS provider and Cloudflare have the correct A records pointing to your server IP
+
+3. **Restart Caddy**: SSL certificate issues can often be resolved by restarting the Caddy container:
+   ```bash
+   ssh root@<droplet-ip>
+   cd /opt/apps/caddy
+   docker-compose down
+   docker-compose up -d
+   ```
+
+4. **Check certificate logs**: View Caddy logs to see any certificate-related errors:
+   ```bash
+   ssh root@<droplet-ip>
+   docker logs $(docker ps -q -f name=caddy) | grep certificate
+   ```
+
+5. **Wait for DNS propagation**: Sometimes DNS changes can take 24-48 hours to fully propagate globally
+
+If issues persist, you may need to manually configure SSL certificates or check for more specific errors in the Caddy logs.
+
 ## Cleanup
 
 To destroy all created resources:

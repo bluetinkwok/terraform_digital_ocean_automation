@@ -47,6 +47,7 @@ resource "digitalocean_record" "n8n" {
   type   = "A"
   name   = "n8n"
   value  = digitalocean_droplet.apps.ipv4_address
+  ttl    = 1800
 }
 
 resource "digitalocean_record" "flowise" {
@@ -54,4 +55,5 @@ resource "digitalocean_record" "flowise" {
   type   = "A"
   name   = "flowise"
   value  = digitalocean_droplet.apps.ipv4_address
+  ttl    = 1800
 } 
